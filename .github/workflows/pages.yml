@@ -16,6 +16,7 @@ concurrency:
 
 env:
   ASTRO_TELEMETRY_DISABLED: "1"
+  PUBLIC_ORES_CHAT_API_BASE: ${{ vars.PUBLIC_ORES_CHAT_API_BASE }}
 
 jobs:
   build:
