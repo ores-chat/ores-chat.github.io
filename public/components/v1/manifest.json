@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "package": "@ores-chat/external-components",
+  "version": "0.1.0",
+  "artifacts": [
+    {
+      "path": "ores-chat-footer-link.js",
+      "media_type": "text/javascript",
+      "sha256": "8ed7ad4a524358b016836fb3408646517ef53989482a467db1b3e714cba9e521",
+      "surfaces": [
+        "html",
+        "custom-element"
+      ]
+    }
+  ]
+}

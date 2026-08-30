@@ -1,0 +1,56 @@
+---
+import Base from "../layouts/Base.astro";
+---
+
+<Base
+  title="ORES Chat — context-aware conversations for every product surface"
+  description="Reusable public, customer, and admin chat systems with product-owned context and authorization."
+>
+  <section class="shell hero">
+    <div>
+      <p class="eyebrow">One protocol · three trust boundaries</p>
+      <h1>Useful chat, <span>grounded in your product.</span></h1>
+      <p class="lede">
+        ORES Chat gives independent applications a reusable conversation layer while each product keeps
+        control of its own data, context, permissions, and visual language.
+      </p>
+      <div class="actions">
+        <a class="button button--primary" href="/chat/">Open public chat</a>
+        <a class="button" href="https://github.com/ores-chat/ores-chat-external-components">Component source</a>
+      </div>
+    </div>
+
+    <aside class="system-map" aria-label="Chat surfaces">
+      <article>
+        <strong>Public</strong>
+        <small>Anonymous, allowlisted marketing context</small>
+      </article>
+      <article>
+        <strong>Customer</strong>
+        <small>Authenticated product context and ownership</small>
+      </article>
+      <article>
+        <strong>Admin</strong>
+        <small>Independent realm, data plane, and audit surface</small>
+      </article>
+    </aside>
+  </section>
+
+  <section class="shell principles" aria-label="Platform principles">
+    <article>
+      <p class="eyebrow">Portable</p>
+      <h2>Flutter, WebAssembly, and HTML</h2>
+      <p>Framework-neutral components fit existing applications without imposing React or a second UI architecture.</p>
+    </article>
+    <article>
+      <p class="eyebrow">Contextual</p>
+      <h2>Your backend stays authoritative</h2>
+      <p>Products choose what the conversation can retrieve. Authentication never silently becomes product authorization.</p>
+    </article>
+    <article>
+      <p class="eyebrow">Provider-neutral</p>
+      <h2>One contract, multiple agents</h2>
+      <p>OpenAI, Anthropic, and Gemini adapters remain behind a bounded API instead of leaking into browser components.</p>
+    </article>
+  </section>
+</Base>
