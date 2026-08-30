@@ -1,0 +1,44 @@
+---
+import Base from "../layouts/Base.astro";
+
+const requestedApiBase = import.meta.env.PUBLIC_ORES_CHAT_API_BASE?.trim() ?? "";
+const isConfigured = (() => {
+  if (!requestedApiBase) return false;
+  try {
+    const url = new URL(requestedApiBase);
+    return url.protocol === "https:" || (url.protocol === "http:" && ["localhost", "127.0.0.1", "[::1]"].includes(url.hostname));
+  } catch {
+    return false;
+  }
+})();
+---
+
+<Base
+  title="Public chat — ORES Chat"
+  description="Public, context-scoped chat for ORES Chat-enabled marketing sites."
+>
+  <section class="shell chat-page">
+    <div class="chat-card">
+      <p class="eyebrow">Public conversation</p>
+      <h1>Ask the site.</h1>
+      <p class="lede">
+        The referring site supplies a bounded context identifier. The ORES Chat server decides which public
+        information that context may retrieve; browser code never receives model-provider credentials.
+      </p>
+
+      {isConfigured ? (
+        <div class="actions">
+          <ores-chat-footer-link mode="dialog" api-base={requestedApiBase}>
+            <a class="button button--primary" slot="link" href="#chat">Start a conversation</a>
+          </ores-chat-footer-link>
+        </div>
+      ) : (
+        <p class="availability">
+          <strong>Public chat is not connected yet.</strong><br />
+          The component and context boundary are ready, but no production API origin has been configured. This
+          page intentionally does not simulate a successful chatbot or send messages elsewhere.
+        </p>
+      )}
+    </div>
+  </section>
+</Base>

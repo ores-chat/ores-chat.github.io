@@ -1,0 +1,21 @@
+{
+  "name": "ores-chat-github-io",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Public Astro site and compiled component distribution for ORES Chat.",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build && node scripts/verify-built-site.mjs",
+    "preview": "astro preview",
+    "test": "node --test tests/*.test.mjs",
+    "check": "npm run test && npm run build"
+  },
+  "dependencies": {
+    "astro": "7.1.4"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "packageManager": "npm@10.9.2"
+}

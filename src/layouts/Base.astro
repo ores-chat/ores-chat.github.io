@@ -1,0 +1,47 @@
+---
+import "../styles/global.css";
+
+interface Props {
+  title: string;
+  description: string;
+}
+
+const { title, description } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#071312" />
+    <link rel="canonical" href={Astro.url} />
+    <title>{title}</title>
+    <script is:inline type="module" src="/components/v1/ores-chat-footer-link.js"></script>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="shell site-header__inner">
+        <a class="brand" href="/">ORES Chat</a>
+        <nav aria-label="Primary navigation">
+          <a href="/chat/">Public chat</a>
+          <a href="https://github.com/ores-chat">GitHub</a>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <slot />
+    </main>
+
+    <footer class="site-footer">
+      <div class="shell site-footer__inner">
+        <span>© 2026 ORES Chat</span>
+        <ores-chat-footer-link context-id="ores-chat-marketing">
+          <a slot="link" href="/chat/?context=ores-chat-marketing">Chat with ORES</a>
+        </ores-chat-footer-link>
+      </div>
+    </footer>
+  </body>
+</html>
