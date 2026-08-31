@@ -6,7 +6,7 @@
     {
       "path": "ores-chat-footer-link.js",
       "media_type": "text/javascript",
-      "sha256": "8ed7ad4a524358b016836fb3408646517ef53989482a467db1b3e714cba9e521",
+      "sha256": "3dc8dd67ae7d45fb3fe67e64351deffc62b875dd0a4f21e3874818ee8fd9fe47",
       "surfaces": [
         "html",
         "custom-element"

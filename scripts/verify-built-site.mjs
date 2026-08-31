@@ -14,6 +14,10 @@ const [indexHtml, chatHtml, artifact, checksumText, provenanceText] = await Prom
 assert.match(indexHtml, /ores-chat-footer-link/);
 assert.match(indexHtml, /\/components\/v1\/ores-chat-footer-link\.js/);
 assert.match(chatHtml, /Public chat is not connected yet|mode="dialog"/);
+assert.match(artifact, /v1\/public\/chat/);
+assert.match(artifact, /credentials: "omit"/);
+assert.match(artifact, /"x-ores-chat-site": contextId/);
+assert.doesNotMatch(artifact, /v1\/public\/messages/);
 
 const expectedDigest = checksumText.trim().split(/\s+/)[0];
 const actualDigest = createHash("sha256").update(artifact).digest("hex");
@@ -23,6 +27,10 @@ const provenance = JSON.parse(provenanceText);
 assert.equal(provenance.artifact, "ores-chat-footer-link.js");
 assert.equal(provenance.sha256, actualDigest);
 assert.match(provenance.source_commit, /^[a-f0-9]{40}$/);
+assert.equal(
+  provenance.source_pull_request,
+  "https://github.com/ores-chat/ores-chat-external-components/pull/2",
+);
 assert.equal(
   provenance.source_repository,
   "https://github.com/ores-chat/ores-chat-external-components",
