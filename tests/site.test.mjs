@@ -41,7 +41,15 @@ test("distributes a provider-neutral custom-element artifact with provenance", a
   const provenance = JSON.parse(provenanceText);
 
   assert.match(artifact, /customElements\.define\("ores-chat-footer-link"/);
-  assert.match(artifact, /v1\/public\/messages/);
+  assert.match(artifact, /v1\/public\/chat/);
+  assert.match(artifact, /protocol: PROTOCOL_VERSION/);
+  assert.match(artifact, /credentials: "omit"/);
+  assert.match(artifact, /"x-ores-chat-site": contextId/);
+  assert.doesNotMatch(artifact, /headers:[\s\S]{0,500}authorization/i);
   assert.deepEqual(manifest.artifacts[0].surfaces, ["html", "custom-element"]);
   assert.equal(provenance.sha256, manifest.artifacts[0].sha256);
+  assert.equal(
+    provenance.source_pull_request,
+    "https://github.com/ores-chat/ores-chat-external-components/pull/2",
+  );
 });

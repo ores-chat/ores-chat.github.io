@@ -4,11 +4,20 @@ const DEFAULT_CONTEXT_ID = "public";
 const MAX_MESSAGE_LENGTH = 4_000;
 const MAX_RESPONSE_BYTES = 65_536;
 const REQUEST_TIMEOUT_MS = 20_000;
+const PROTOCOL_VERSION = "ores.chat/v1";
 
 const HTMLElementBase = globalThis.HTMLElement ?? class {};
 
 const isLoopbackHost = (hostname) =>
   hostname === "localhost" || hostname === "127.0.0.1" || hostname === "[::1]";
+
+const isOpaqueId = (value) =>
+  typeof value === "string"
+  && /^[A-Za-z0-9_.:/-]{1,256}$/.test(value)
+  && !value.startsWith("/")
+  && !value.includes("..")
+  && !value.includes("//")
+  && !value.includes("://");
 
 export const normalizeContextId = (value) => {
   const candidate = String(value ?? "").trim().toLowerCase();
@@ -40,11 +49,34 @@ export const buildMessageEndpoint = (apiBase) => {
   const base = normalizeHttpUrl(apiBase);
   if (!base) return null;
   if (!base.pathname.endsWith("/")) base.pathname += "/";
-  return new URL("v1/public/messages", base).toString();
+  return new URL("v1/public/chat", base).toString();
 };
 
-export const extractAssistantReply = (payload) => {
-  const candidate = payload?.message?.content ?? payload?.reply;
+export const buildPublicChatRequest = ({ requestId, contextId, message, conversationId = null }) => {
+  const boundedMessage = String(message ?? "").trim();
+  if (!isOpaqueId(requestId)) {
+    throw new TypeError("The chat request id was invalid.");
+  }
+  if (!boundedMessage || boundedMessage.length > MAX_MESSAGE_LENGTH) {
+    throw new RangeError("The chat message had an invalid length.");
+  }
+  if (conversationId !== null && !isOpaqueId(conversationId)) {
+    throw new TypeError("The conversation id was invalid.");
+  }
+  return {
+    protocol: PROTOCOL_VERSION,
+    request_id: requestId,
+    message: boundedMessage,
+    context_refs: [{ id: normalizeContextId(contextId) }],
+    ...(conversationId === null ? {} : { conversation_id: conversationId }),
+  };
+};
+
+export const extractAssistantReply = (payload, expectedRequestId) => {
+  if (payload?.protocol !== PROTOCOL_VERSION || payload?.request_id !== expectedRequestId) {
+    throw new TypeError("The chat response did not match its request.");
+  }
+  const candidate = payload?.answer;
   if (typeof candidate !== "string") throw new TypeError("The chat response did not contain a text reply.");
 
   const reply = candidate.trim();
@@ -282,12 +314,21 @@ export class OresChatFooterLink extends HTMLElementBase {
     const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
 
     try {
+      const requestId = globalThis.crypto?.randomUUID?.();
+      if (!requestId) throw new Error("Secure request identifiers are unavailable.");
+      const request = buildPublicChatRequest({ requestId, contextId, message });
       const response = await fetch(endpoint, {
         method: "POST",
         credentials: "omit",
         redirect: "error",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({ context_id: contextId, message }),
+        referrerPolicy: "strict-origin-when-cross-origin",
+        headers: {
+          accept: "application/json",
+          "content-type": "application/json",
+          "x-ores-chat-site": contextId,
+          "x-request-id": requestId,
+        },
+        body: JSON.stringify(request),
         signal: controller.signal,
       });
 
@@ -295,7 +336,7 @@ export class OresChatFooterLink extends HTMLElementBase {
       if (body.length > MAX_RESPONSE_BYTES) throw new RangeError("The chat response was too large.");
       if (!response.ok) throw new Error("The chat service did not accept the message.");
 
-      const reply = extractAssistantReply(JSON.parse(body));
+      const reply = extractAssistantReply(JSON.parse(body), requestId);
       this.#messages.append(createMessage("assistant", reply));
       this.#status.textContent = "";
       this.#messages.scrollTop = this.#messages.scrollHeight;
