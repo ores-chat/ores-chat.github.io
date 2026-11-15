@@ -1,16 +1,9 @@
 ---
 import Base from "../layouts/Base.astro";
+import { isTrustedPublicApiOrigin } from "../lib/public-api-origin.mjs";
 
-const requestedApiBase = import.meta.env.PUBLIC_ORES_CHAT_API_BASE?.trim() ?? "";
-const isConfigured = (() => {
-  if (!requestedApiBase) return false;
-  try {
-    const url = new URL(requestedApiBase);
-    return url.protocol === "https:" || (url.protocol === "http:" && ["localhost", "127.0.0.1", "[::1]"].includes(url.hostname));
-  } catch {
-    return false;
-  }
-})();
+const requestedApiBase = import.meta.env.PUBLIC_ORES_CHAT_API_BASE ?? "";
+const isConfigured = isTrustedPublicApiOrigin(requestedApiBase);
 ---
 
 <Base
